@@ -1,0 +1,50 @@
+name: Repo-scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '37 16 * * 4'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build ./dock -t localbuild/testimage:latest
+
+      - name: Install Grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Run Grype Scan (JSON output)
+        run: |
+          grype localbuild/testimage:latest \
+            --fail-on critical \
+            -o json > grype-report.json
+
+      - name: Upload JSON report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grype-json-report
+          path: grype-report.json
+
+      - name: Generate SARIF for GitHub Security Tab
+        run: |
+          grype localbuild/testimage:latest -o sarif > grype-results.sarif
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: grype-results.sarif
