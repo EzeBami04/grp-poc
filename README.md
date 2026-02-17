@@ -15,4 +15,4 @@ Security
 
 see https://github.com/anchore/scan-action.
 
-information on Anchore's container image scanning tool Grype, see  https://github.com/anchore/grype. It uses actions that are not certified by GitHub. They are provided by a third-party and are governed by separate terms of service, privacy policy, and support documentation...
+information on Anchore's container image scanning tool Grype, see  https://github.com/anchore/grype. It uses actions that are not certified by GitHub. They are provided by a third-party and are governed by separate terms of service, privacy policy, and support documentation..
